@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pseudo Café — Platform Guide</title>
+<style>
+  /* ── Reset ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── Fonts ── */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  /* ── Variables ── */
+  :root {
+    --yellow:   #eab308;
+    --yellow-light: #fef08a;
+    --black:    #09090b;
+    --gray-950: #0c0c0e;
+    --gray-900: #18181b;
+    --gray-800: #27272a;
+    --gray-700: #3f3f46;
+    --gray-500: #71717a;
+    --gray-400: #a1a1aa;
+    --gray-300: #d4d4d8;
+    --white:    #fafafa;
+    --emerald:  #10b981;
+    --blue:     #3b82f6;
+    --purple:   #a855f7;
+    --red:      #ef4444;
+    --orange:   #f97316;
+  }
+
+  /* ── Base ── */
+  html { font-size: 10pt; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #1a1a2e;
+    line-height: 1.6;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Page layout ── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; }
+    .no-print { display: none !important; }
+  }
+
+  /* ── Cover page ── */
+  .cover {
+    background: linear-gradient(145deg, #09090b 0%, #18181b 50%, #1c1007 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20mm 18mm;
+    min-height: 297mm;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(234,179,8,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 40px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(234,179,8,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .cover-badge {
+    background: rgba(234,179,8,0.15);
+    border: 1px solid rgba(234,179,8,0.35);
+    color: var(--yellow);
+    font-size: 7pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    display: inline-block;
+  }
+  .cover h1 {
+    font-size: 42pt;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    margin-bottom: 6px;
+  }
+  .cover h1 span { color: var(--yellow); }
+  .cover .subtitle {
+    font-size: 13pt;
+    color: rgba(255,255,255,0.55);
+    font-weight: 300;
+    margin-bottom: 36px;
+    letter-spacing: 0.5px;
+  }
+  .cover .tagline {
+    font-size: 16pt;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    max-width: 400px;
+    line-height: 1.4;
+    margin-bottom: 48px;
+  }
+  .cover-divider {
+    width: 56px;
+    height: 3px;
+    background: var(--yellow);
+    border-radius: 2px;
+    margin-bottom: 48px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .cover-meta-item { }
+  .cover-meta-item .label {
+    font-size: 6.5pt;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 3px;
+  }
+  .cover-meta-item .value {
+    font-size: 9pt;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+  }
+  .cover-corner {
+    position: absolute;
+    bottom: 18mm;
+    right: 18mm;
+    text-align: right;
+    color: rgba(255,255,255,0.2);
+    font-size: 7pt;
+    letter-spacing: 1px;
+  }
+
+  /* ── Content pages ── */
+  .content {
+    padding: 14mm 16mm;
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+  }
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10mm;
+    padding-bottom: 4mm;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .page-header .brand {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #9ca3af;
+  }
+  .page-header .brand span { color: var(--yellow); }
+  .page-number {
+    font-size: 7.5pt;
+    color: #9ca3af;
+  }
+
+  /* ── Section headings ── */
+  .section-label {
+    font-size: 6.5pt;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin-bottom: 6px;
+  }
+  h2 {
+    font-size: 20pt;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+  h4 {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+  p {
+    font-size: 9pt;
+    color: #4b5563;
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .card.dark {
+    background: #111827;
+    border-color: #1f2937;
+    color: white;
+  }
+  .card.yellow {
+    background: #fefce8;
+    border-color: #fde68a;
+  }
+  .card-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .card-row .card {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  /* ── Feature grid ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .feature-item {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 11px 13px;
+  }
+  .feature-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 7px;
+    font-size: 13px;
+  }
+  .fi-yellow { background: #fef9c3; }
+  .fi-blue   { background: #dbeafe; }
+  .fi-green  { background: #dcfce7; }
+  .fi-purple { background: #f3e8ff; }
+  .fi-orange { background: #ffedd5; }
+  .fi-red    { background: #fee2e2; }
+  .feature-item h4 { font-size: 8.5pt; margin-bottom: 3px; }
+  .feature-item p  { font-size: 7.5pt; margin-bottom: 0; color: #6b7280; }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block;
+    font-size: 6.5pt;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .badge-yellow { background: #fef9c3; color: #92400e; }
+  .badge-green  { background: #dcfce7; color: #166534; }
+  .badge-blue   { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #f3e8ff; color: #6b21a8; }
+  .badge-gray   { background: #f3f4f6; color: #4b5563; }
+
+  /* ── Table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin-bottom: 10px;
+  }
+  th {
+    background: #f3f4f6;
+    color: #374151;
+    font-weight: 700;
+    text-align: left;
+    padding: 7px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 7.5pt;
+    letter-spacing: 0.3px;
+  }
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #4b5563;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Code ── */
+  code {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 7.5pt;
+    background: #f3f4f6;
+    color: #374151;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  .code-block {
+    background: #111827;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .code-block code {
+    background: transparent;
+    color: #d1fae5;
+    font-size: 7.5pt;
+    display: block;
+    line-height: 1.65;
+    padding: 0;
+  }
+  .code-block .cm { color: #6b7280; }
+  .code-block .ck { color: #93c5fd; }
+  .code-block .cs { color: #fde68a; }
+  .code-block .cv { color: #c4b5fd; }
+  .code-block .co { color: #6ee7b7; }
+
+  /* ── Step list ── */
+  .step-list { margin-bottom: 10px; }
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--yellow);
+    color: #000;
+    font-size: 8pt;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-body h4 { font-size: 9pt; margin-bottom: 3px; color: #111827; }
+  .step-body p  { font-size: 8pt; margin-bottom: 0; color: #6b7280; }
+
+  /* ── Flow ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .flow-node {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 4px 9px;
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: #374151;
+  }
+  .flow-node.active {
+    background: #fef9c3;
+    border-color: #fde68a;
+    color: #92400e;
+  }
+  .flow-arrow {
+    color: #9ca3af;
+    font-size: 9pt;
+    font-weight: 300;
+  }
+
+  /* ── Tech pill ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin-bottom: 10px;
+  }
+  .tech-item {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 9px 11px;
+  }
+  .tech-item .name {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 2px;
+  }
+  .tech-item .desc {
+    font-size: 7pt;
+    color: #6b7280;
+    line-height: 1.4;
+  }
+  .tech-item .role {
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  /* ── Role table card ── */
+  .role-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .role-row:last-child { border-bottom: none; }
+  .role-name {
+    font-size: 8pt;
+    font-weight: 700;
+    min-width: 70px;
+    color: #111827;
+  }
+  .role-desc {
+    font-size: 7.5pt;
+    color: #6b7280;
+    flex: 1;
+  }
+
+  /* ── Callout ── */
+  .callout {
+    border-left: 3px solid var(--yellow);
+    background: #fefce8;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+  }
+  .callout p { margin-bottom: 0; font-size: 8.5pt; color: #374151; }
+  .callout strong { color: #111827; }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; margin-bottom: 10px; }
+  .checklist li {
+    font-size: 8.5pt;
+    color: #4b5563;
+    padding: 3px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    line-height: 1.5;
+  }
+  .checklist li::before {
+    content: '✓';
+    color: #16a34a;
+    font-weight: 700;
+    font-size: 8pt;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  /* ── Env var block ── */
+  .env-var {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 8pt;
+  }
+  .env-var:last-child { border-bottom: none; }
+  .env-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: #1d4ed8;
+    min-width: 210px;
+  }
+  .env-val {
+    color: #6b7280;
+    font-size: 7.5pt;
+    flex: 1;
+  }
+
+  /* ── Spacing utilities ── */
+  .mt-4  { margin-top: 4mm; }
+  .mt-6  { margin-top: 6mm; }
+  .mt-8  { margin-top: 8mm; }
+  .mb-4  { margin-bottom: 4mm; }
+  .mb-6  { margin-bottom: 6mm; }
+  .col2  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .flex-between { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .flex-col { display: flex; flex-direction: column; }
+
+  /* ── Print helper ── */
+  .print-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #eab308;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 10pt;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(234,179,8,0.4);
+    z-index: 999;
+  }
+  .print-btn:hover { background: #ca8a04; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">⬇ Save as PDF</button>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE 1  — COVER
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="cover">
+    <div class="cover-badge">Platform Documentation · v1.0</div>
+    <h1>Pseudo<br><span>Café</span></h1>
+    <div class="subtitle">Restaurant Operations Platform</div>
+    <div class="cover-divider"></div>
+    <p class="tagline">A production-grade, multi-tenant restaurant management system — built for real kitchens, real teams, and real revenue.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="label">Framework</div>
+        <div class="value">Next.js 15 · App Router</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Database</div>
+        <div class="value">Supabase · PostgreSQL</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Auth</div>
+        <div class="value">Supabase Auth + RBAC</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Email</div>
+        <div class="value">Resend SDK</div>
+      </div>
+    </div>
+    <div class="cover-corner">Pseudo Café · Confidential</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE 2  — CONTENTS + OVERVIEW
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="page-header">
+      <div class="brand">Pseudo <span>Café</span> — Platform Guide</div>
+      <div class="page-number">2</div>
+    </div>
+
+    <div class="section-label">Contents</div>
+    <h2>What's inside</h2>
+    <p style="margin-bottom:14px;">This document covers everything you need to understand, run, and deploy Pseudo Café — from the staff workflows to the cloud infrastructure.</p>
+
+    <div class="card-row">
+      <div class="card" style="border-left: 3px solid #eab308;">
+        <h4 style="margin-bottom:6px;">Platform Overview</h4>
+        <p style="margin-bottom:4px; font-size:7.5pt;">What the system does, who it's for, and the roles it serves.</p>
+        <div class="badge badge-yellow">Page 2–3</div>
+      </div>
+      <div class="card" style="border-left: 3px solid #3b82f6;">
+        <h4 style="margin-bottom:6px;">How to Use</h4>
+        <p style="margin-bottom:4px; font-size:7.5pt;">Step-by-step user journeys for every role — Owner, Waiter, Kitchen, Cashier.</p>
+        <div class="badge badge-blue">Page 4–5</div>
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="card" style="border-left: 3px solid #10b981;">
+        <h4 style="margin-bottom:6px;">Tech Stack</h4>
+        <p style="margin-bottom:4px; font-size:7.5pt;">Every library, framework and external service — and why it was chosen.</p>
+        <div class="badge badge-green">Page 6</div>
+      </div>
+      <div class="card" style="border-left: 3px solid #a855f7;">
+        <h4 style="margin-bottom:6px;">Deployment Guide</h4>
+        <p style="margin-bottom:4px; font-size:7.5pt;">From local dev to a live Vercel URL — including env vars, DNS, and checklist.</p>
+        <div class="badge badge-purple">Page 7–8</div>
+      </div>
+    </div>
+
+    <div class="mt-6"></div>
+    <div class="section-label">Platform Overview</div>
+    <h2>What is Pseudo Café?</h2>
+    <p>Pseudo Café is a full-stack, multi-tenant restaurant operations platform that manages the entire dine-in workflow — from a customer sitting down to a payment being received — in real time, across every role in a restaurant.</p>
+
+    <div class="callout">
+      <p><strong>The problem it solves:</strong> Most restaurants still run on paper tickets, verbal communication, and separate billing apps. Pseudo Café replaces all of that with a unified digital system where the waiter, kitchen, and cashier all see the same live data instantly.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feature-icon fi-yellow">📊</div>
+        <h4>Owner Dashboard</h4>
+        <p>Live revenue counter, order count, avg order value, table occupancy, and top-selling items — updated in real time without page refresh.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-blue">🍽️</div>
+        <h4>Waiter POS</h4>
+        <p>Full-screen floor view with colour-coded table statuses. Click a table, search the menu, add items with per-item notes, and fire to kitchen in one tap.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-orange">👨‍🍳</div>
+        <h4>Kitchen Display (KDS)</h4>
+        <p>Live order board — no paper tickets. Items cycle through Queued → Preparing → Ready with a single tap. Late orders highlighted in red after 15 minutes.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-purple">💳</div>
+        <h4>Cashier Billing</h4>
+        <p>Itemised bill view, percentage discount (capped by role), payment method selection (Cash / Card / Other), optional reference number, one-click confirm.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-green">👥</div>
+        <h4>Staff Management</h4>
+        <p>Invite staff by email — credentials delivered via Resend. New staff show as <em>Pending</em> until first login, then flip to <em>Active</em> automatically.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-red">📈</div>
+        <h4>Sales Reports</h4>
+        <p>Date-range reports (Today / 7 days / 30 days) showing total revenue, breakdown by payment method, and top 10 items ranked by revenue.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE 3  — ROLES + ORDER FLOW
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="page-header">
+      <div class="brand">Pseudo <span>Café</span> — Platform Guide</div>
+      <div class="page-number">3</div>
+    </div>
+
+    <div class="section-label">Roles &amp; Permissions</div>
+    <h2>Who uses what</h2>
+    <p>Every user is assigned a role at invite time. Roles are enforced at three layers: the UI (buttons hidden), the API (permission checked server-side), and the database (Row Level Security).</p>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="role-row">
+        <div class="role-name"><span class="badge badge-yellow">Owner</span></div>
+        <div class="role-desc">Full access. Dashboard, menu management, staff management, all reports, all POS screens. Cannot be deactivated.</div>
+      </div>
+      <div class="role-row">
+        <div class="role-name"><span class="badge badge-blue">Manager</span></div>
+        <div class="role-desc">Same as Owner except cannot create another Owner. Can invite staff, apply discounts, view reports.</div>
+      </div>
+      <div class="role-row">
+        <div class="role-name"><span class="badge badge-purple">Cashier</span></div>
+        <div class="role-desc">Access to Cashier billing screen only. Can apply discounts up to a configured limit (e.g. 10%). Cannot see reports or staff.</div>
+      </div>
+      <div class="role-row">
+        <div class="role-name"><span class="badge badge-green">Waiter</span></div>
+        <div class="role-desc">Access to Waiter POS only. Can view floor, create orders, add items with notes, fire to kitchen, request bill. Cannot see prices in reports.</div>
+      </div>
+      <div class="role-row" style="border-bottom:none;">
+        <div class="role-name"><span class="badge badge-gray">Kitchen</span></div>
+        <div class="role-desc">Access to Kitchen Display only. Can advance item status (Queued → Preparing → Ready). No access to prices, staff, or reports.</div>
+      </div>
+    </div>
+
+    <div class="section-label mt-4">Order Lifecycle</div>
+    <h2>From seat to receipt</h2>
+    <p>Every order follows a strict state machine. Transitions are validated server-side — an order cannot skip states or go backwards.</p>
+
+    <div class="flow">
+      <div class="flow-node">Draft</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node active">Placed</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node active">In Kitchen</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node active">Ready</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Served</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Billed</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Paid</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#dcfce7; border-color:#86efac;">Closed ✓</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>State</th><th>Who triggers it</th><th>What happens</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>draft</code></td><td>System</td><td>Order created when waiter opens a table.</td></tr>
+        <tr><td><code>placed</code></td><td>Waiter</td><td>Items added and confirmed — order locked for editing.</td></tr>
+        <tr><td><code>in_kitchen</code></td><td>Waiter</td><td>Order appears on KDS. Table card turns amber.</td></tr>
+        <tr><td><code>ready</code></td><td>Kitchen (auto)</td><td>All items marked ready → order auto-advances. Waiter alerted.</td></tr>
+        <tr><td><code>served</code></td><td>Waiter</td><td>Food delivered. Table can request bill.</td></tr>
+        <tr><td><code>billed</code></td><td>Waiter</td><td>Bill requested. Order appears in Cashier queue.</td></tr>
+        <tr><td><code>paid → closed</code></td><td>Cashier</td><td>Payment recorded. Table freed instantly via real-time update.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-label mt-4">Real-Time Architecture</div>
+    <h2>What updates live</h2>
+    <p>Supabase Realtime (PostgreSQL logical replication → websocket) powers three live views simultaneously:</p>
+    <div class="col2">
+      <div class="card">
+        <h4>🟡 Floor View (Waiter)</h4>
+        <p style="font-size:7.5pt; margin:0;">Table cards update the instant another waiter changes status. Two waiters cannot double-order the same table.</p>
+      </div>
+      <div class="card">
+        <h4>🟠 Kitchen Display</h4>
+        <p style="font-size:7.5pt; margin:0;">New orders appear instantly — no page refresh, no polling. Age timer updates every 10 seconds.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h4>📊 Owner Dashboard</h4>
+      <p style="font-size:7.5pt; margin:0;">Revenue counter increments live when cashier processes a payment. Order count, top items, and occupancy all update in real time.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE 4  — HOW TO USE (OWNER + WAITER)
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="page-header">
+      <div class="brand">Pseudo <span>Café</span> — Platform Guide</div>
+      <div class="page-number">4</div>
+    </div>
+
+    <div class="section-label">How to Use</div>
+    <h2>Owner / Manager journey</h2>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Log in at <code>/login</code></h4>
+          <p>Enter email and password. Owner and Manager are redirected to <code>/outlet/[id]</code> — the management dashboard. Sidebar navigation gives access to Overview, Menu, Staff, and Reports.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Build the menu — <code>/outlet/[id]/menu</code></h4>
+          <p>Click <strong>Add Item</strong>. Fill name, price, category, and optionally paste an image URL (Unsplash, CDN, etc.). Leave image blank to use the auto-selected category photo. Toggle availability without deleting items for 86'd dishes.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Invite staff — <code>/outlet/[id]/staff</code></h4>
+          <p>Click <strong>Invite Staff</strong>. Enter full name, email, select a role, and set an initial password (min 8 chars). Staff receive a branded welcome email with their credentials. They appear with a <span class="badge badge-yellow">Pending</span> badge until their first login, then automatically become <span class="badge badge-green">Active</span>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Monitor operations — Dashboard Overview</h4>
+          <p>The overview shows live: today's revenue (increments on each payment), order count, average order value, table occupancy, and top 5 items sold. Use the three POS quick-links to open Waiter / Kitchen / Cashier views directly.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Review performance — <code>/outlet/[id]/reports</code></h4>
+          <p>Switch between Today, Last 7 days, Last 30 days. See total revenue, breakdown by payment method (Cash / Card / Other), and top 10 items ranked by revenue with quantity sold.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label mt-6">How to Use</div>
+    <h2>Waiter journey</h2>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Open the floor — <code>/waiter/[id]</code></h4>
+          <p>Colour-coded table grid: <span style="color:#10b981; font-weight:600;">■ Green</span> = Free, <span style="color:#3b82f6; font-weight:600;">■ Blue</span> = Seated, <span style="color:#eab308; font-weight:600;">■ Amber</span> = Ordered, <span style="color:#ef4444; font-weight:600;">■ Red</span> = Bill requested. Updates live without refresh.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Tap a table → build order</h4>
+          <p>The right panel opens with the full menu. Use the search bar to find items instantly. Tap <strong>+</strong> to add, <strong>−</strong> to remove. Tap the note icon (📝) after adding an item to set special instructions — "no onions", "extra sauce", etc. Notes appear on the KDS.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Send to Kitchen</h4>
+          <p>Cart total shown at the bottom. Tap <strong>Send to Kitchen</strong> — the order fires to the KDS and the table card turns amber. You can add more items later (they join the existing order). If the API fails, an inline error banner shows the reason — no silent failures.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Request Bill</h4>
+          <p>When food is served and the guest asks for the bill, tap <strong>Request Bill</strong> in the table header. The order moves to <code>billed</code> state and appears instantly in the Cashier queue. The table card turns red.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE 5  — HOW TO USE (KITCHEN + CASHIER) + EXTRAORDINARY
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="page-header">
+      <div class="brand">Pseudo <span>Café</span> — Platform Guide</div>
+      <div class="page-number">5</div>
+    </div>
+
+    <div class="section-label">How to Use</div>
+    <h2>Kitchen &amp; Cashier</h2>
+
+    <div class="col2">
+      <div>
+        <h3 style="margin-bottom:8px;">Kitchen Display (KDS)</h3>
+        <div class="step-list">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Live order cards</h4>
+              <p>Each order appears as a card sorted oldest-first. Table label and elapsed time shown top-right. Orders older than 15 minutes get a red border and <span style="color:#ef4444; font-weight:700;">⚠ LATE</span> badge.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Advance item status</h4>
+              <p>Tap any item to cycle: <code>Queued → Preparing → Ready</code>. Item badge updates immediately. Special notes from the waiter appear in yellow beneath the item name.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Auto-complete</h4>
+              <p>When all items in an order are marked Ready, the order automatically transitions to <code>ready</code> state and disappears from the KDS. The waiter sees the table update live.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px;">Cashier Billing</h3>
+        <div class="step-list">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Bill queue</h4>
+              <p>Left sidebar lists all billed orders in the outlet. Oldest first. Click any order to load the full itemised bill.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Apply discount</h4>
+              <p>Enter a percentage discount (0–100%). The RBAC system caps this silently at the cashier's allowed maximum — any attempt over the limit returns a 403 error shown inline.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Confirm payment</h4>
+              <p>Select Cash, Card, or Other. For card/other you can enter an optional reference/TXN ID. Press <strong>Confirm Payment</strong>. Payment is recorded, order closes, and the table frees instantly across all devices.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label mt-6">What makes it extraordinary</div>
+    <h2>Beyond a basic POS</h2>
+
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feature-icon fi-yellow">⚡</div>
+        <h4>Zero-polling real-time</h4>
+        <p>Every screen — KDS, floor view, dashboard — uses Supabase Realtime (WebSocket). No refresh, no polling. Sub-second latency across all connected devices simultaneously.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-green">🔒</div>
+        <h4>Three-layer security</h4>
+        <p>UI hides unauthorised buttons. API runs <code>can()</code> RBAC check server-side. Database enforces Row Level Security — even a rogue API call cannot read another tenant's data.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-blue">🏢</div>
+        <h4>Multi-tenant by design</h4>
+        <p>Every table has <code>org_id</code>. A single deployment hosts unlimited restaurant organisations. No data leakage between tenants at the DB level. Scale to SaaS with zero schema changes.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-purple">📧</div>
+        <h4>Branded staff onboarding</h4>
+        <p>Welcome emails sent via Resend — dark-themed HTML with credentials card, role badge, and CTA button. Staff show as Pending until first login; auto-activate without any admin action.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-orange">🍕</div>
+        <h4>Per-item kitchen notes</h4>
+        <p>Waiters can attach special instructions to individual items ("no onions, extra sauce"). Notes travel from POS → database → KDS in real time, eliminating verbal re-transmission.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-red">🛡️</div>
+        <h4>State machine enforcement</h4>
+        <p>Orders follow a strict state machine enforced at the API layer. An order cannot skip states or be paid before it's billed. Every transition is audited with timestamps.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE 6  — TECH STACK + EXTERNAL SERVICES
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="page-header">
+      <div class="brand">Pseudo <span>Café</span> — Platform Guide</div>
+      <div class="page-number">6</div>
+    </div>
+
+    <div class="section-label">Tech Stack</div>
+    <h2>Built with</h2>
+
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="name">Next.js 15</div>
+        <div class="desc">App Router with React Server Components. Route groups for layout isolation. Server Actions for type-safe data fetching.</div>
+        <span class="badge badge-blue role">Framework</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">TypeScript 6</div>
+        <div class="desc">Strict mode enabled. All API responses, DB rows, and component props are fully typed. Zero <code>any</code> escape hatches in business logic.</div>
+        <span class="badge badge-blue role">Language</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">Tailwind CSS v4</div>
+        <div class="desc">Utility-first CSS with glassmorphism design system. Yellow/black colour palette. All styles are inlined — no CSS files to manage.</div>
+        <span class="badge badge-gray role">Styling</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">Supabase</div>
+        <div class="desc">PostgreSQL database, Auth (email+password), Realtime subscriptions, Row Level Security. Managed cloud hosting on free tier → Pro ready.</div>
+        <span class="badge badge-green role">Backend</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">@supabase/ssr</div>
+        <div class="desc">Cookie-based auth for server-side rendering. Session tokens stored in HTTP-only cookies. Middleware refreshes sessions transparently.</div>
+        <span class="badge badge-green role">Auth</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">Zod</div>
+        <div class="desc">Runtime schema validation on every API route. Malformed requests return structured 400 errors. Schemas shared between client and server.</div>
+        <span class="badge badge-yellow role">Validation</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">Resend SDK</div>
+        <div class="desc">Transactional email delivery. Sends branded HTML welcome emails to invited staff. Reliable delivery with open/bounce tracking.</div>
+        <span class="badge badge-purple role">Email</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">TanStack Query v5</div>
+        <div class="desc">Server-state management with caching and background refetch. Integrated with Supabase Realtime for cache invalidation on live events.</div>
+        <span class="badge badge-gray role">State</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">Lucide React</div>
+        <div class="desc">700+ MIT-licensed SVG icons. Used throughout all staff-facing UI — sidebar navigation, stat cards, POS screens, and action buttons.</div>
+        <span class="badge badge-gray role">Icons</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">Framer Motion</div>
+        <div class="desc">Production-ready animation library. Powers transitions on the customer-facing pages — hero sections, card reveals, and 3D pizza customiser.</div>
+        <span class="badge badge-gray role">Animation</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">Three.js + R3F</div>
+        <div class="desc">WebGL 3D rendering for the customer-facing pizza customiser. React Three Fiber (R3F) and Drei helpers for declarative 3D scene composition.</div>
+        <span class="badge badge-gray role">3D</span>
+      </div>
+      <div class="tech-item">
+        <div class="name">Vercel</div>
+        <div class="desc">Zero-config deployment platform for Next.js. Edge network, automatic HTTPS, preview deployments on every PR, and environment variable management.</div>
+        <span class="badge badge-blue role">Deploy</span>
+      </div>
+    </div>
+
+    <div class="section-label mt-4">External Services</div>
+    <h2>What the platform depends on</h2>
+
+    <table>
+      <thead>
+        <tr><th>Service</th><th>Purpose</th><th>Free tier limit</th><th>Upgrade trigger</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Supabase</strong> (supabase.com)</td>
+          <td>PostgreSQL DB, Auth, Realtime, Storage</td>
+          <td>500 MB DB, 50 K MAU, 200 concurrent connections</td>
+          <td>When DB hits 500 MB or users exceed 50 K</td>
+        </tr>
+        <tr>
+          <td><strong>Resend</strong> (resend.com)</td>
+          <td>Transactional staff invite emails</td>
+          <td>3,000 emails/month, 100/day</td>
+          <td>If inviting &gt;100 staff members per day</td>
+        </tr>
+        <tr>
+          <td><strong>Vercel</strong> (vercel.com)</td>
+          <td>Next.js hosting, CDN, serverless functions</td>
+          <td>Hobby: 100 GB bandwidth, unlimited deploys</td>
+          <td>Commercial use or &gt;100 GB/month</td>
+        </tr>
+        <tr>
+          <td><strong>Unsplash</strong> (images.unsplash.com)</td>
+          <td>Default food photos for menu items</td>
+          <td>Unlimited CDN reads (no API calls made)</td>
+          <td>Never — static CDN URLs, no API key needed</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p><strong>Total cost to run at demo scale:</strong> <strong>$0/month.</strong> Every service used is within free tier limits for development and early-stage restaurant operations. The platform is production-ready to scale to Pro tiers on demand.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE 7  — DEPLOYMENT GUIDE (Part 1)
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="page-header">
+      <div class="brand">Pseudo <span>Café</span> — Platform Guide</div>
+      <div class="page-number">7</div>
+    </div>
+
+    <div class="section-label">Deployment</div>
+    <h2>From code to live URL</h2>
+    <p>This guide takes you from a fresh clone to a publicly accessible deployment on Vercel, backed by Supabase cloud — in under 30 minutes.</p>
+
+    <h3 style="margin-bottom:10px;">Phase 1 — External services setup</h3>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Create a Supabase project</h4>
+          <p>Go to <strong>supabase.com</strong> → New project. Choose a region close to your users (e.g. ap-south-1 for Pakistan). Set a strong database password and save it. After creation, go to <strong>Project Settings → API</strong> and copy:</p>
+          <ul style="margin-top:5px; padding-left:14px; font-size:7.5pt; color:#4b5563; line-height:1.8;">
+            <li><strong>Project URL</strong> → <code>NEXT_PUBLIC_SUPABASE_URL</code></li>
+            <li><strong>anon public key</strong> → <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></li>
+            <li><strong>service_role secret key</strong> → <code>SUPABASE_SERVICE_ROLE_KEY</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Apply the database schema</h4>
+          <p>In Supabase dashboard → <strong>SQL Editor</strong>, paste and run the full migration SQL (found in <code>supabase/migrations/</code> or run via the Supabase MCP tool). This creates all tables, RLS policies, indexes, roles, and permissions in one shot.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Seed demo data (optional)</h4>
+          <p>Run <code>npm run seed</code> locally with your <code>.env.local</code> filled in. This creates a demo organisation, outlet, menu categories, 13 menu items with Unsplash images, tables, and an owner account.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Create a Resend account</h4>
+          <p>Go to <strong>resend.com</strong> → Sign up free → <strong>API Keys</strong> → Create key. Copy the key as <code>RESEND_API_KEY</code>. On the free tier you can send from <code>onboarding@resend.dev</code> without DNS setup. For production, add and verify your own domain under <strong>Domains</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:10px; margin-top:8mm;">Phase 2 — Local development</h3>
+
+    <div class="code-block">
+      <code>
+<span class="cm"># 1. Clone and install</span>
+git clone https://github.com/your-org/pseudo-cafe.git
+cd pseudo-cafe
+npm install
+
+<span class="cm"># 2. Create environment file</span>
+cp .env.example .env.local
+<span class="cm"># Fill in the values below, then:</span>
+
+<span class="cm"># 3. Start development server</span>
+npm run dev
+<span class="cm"># Open http://localhost:3000</span>
+      </code>
+    </div>
+
+    <h3 style="margin-bottom:8px;">Environment variables</h3>
+    <div class="card">
+      <div class="env-var">
+        <span class="env-key">NEXT_PUBLIC_SUPABASE_URL</span>
+        <span class="env-val">Your Supabase project URL — e.g. https://xyzabc.supabase.co</span>
+      </div>
+      <div class="env-var">
+        <span class="env-key">NEXT_PUBLIC_SUPABASE_ANON_KEY</span>
+        <span class="env-val">Public anon key from Supabase API settings</span>
+      </div>
+      <div class="env-var">
+        <span class="env-key">SUPABASE_SERVICE_ROLE_KEY</span>
+        <span class="env-val">Secret service_role key — server-only, never exposed to browser</span>
+      </div>
+      <div class="env-var">
+        <span class="env-key">RESEND_API_KEY</span>
+        <span class="env-val">API key from resend.com — starts with re_</span>
+      </div>
+      <div class="env-var" style="border-bottom:none;">
+        <span class="env-key">NEXT_PUBLIC_SITE_URL</span>
+        <span class="env-val">Your public URL — http://localhost:3000 in dev, https://yourapp.vercel.app in prod</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE 8  — DEPLOYMENT GUIDE (Part 2) + CHECKLIST
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="page-header">
+      <div class="brand">Pseudo <span>Café</span> — Platform Guide</div>
+      <div class="page-number">8</div>
+    </div>
+
+    <h3 style="margin-bottom:10px;">Phase 3 — Deploy to Vercel</h3>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Push to GitHub</h4>
+          <p>Create a new GitHub repository and push your code. Keep <code>.env.local</code> in <code>.gitignore</code> — never commit secrets.</p>
+          <div class="code-block" style="margin-top:6px;">
+            <code>git init &amp;&amp; git add . &amp;&amp; git commit -m "Initial commit"
+git remote add origin https://github.com/your-org/pseudo-cafe.git
+git push -u origin main</code>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Import to Vercel</h4>
+          <p>Go to <strong>vercel.com/new</strong> → Import Git Repository → select your repo. Framework preset is detected automatically as <strong>Next.js</strong>. Leave build settings as default.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Add environment variables</h4>
+          <p>In the Vercel import screen → <strong>Environment Variables</strong> section, add all five variables from the previous page. Set <code>NEXT_PUBLIC_SITE_URL</code> to your Vercel deployment URL (e.g. <code>https://pseudo-cafe.vercel.app</code>). You can update this after the first deploy.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Deploy</h4>
+          <p>Click <strong>Deploy</strong>. Vercel builds the Next.js app (~90 seconds) and provisions serverless functions for all API routes. You get a live HTTPS URL instantly.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Update Supabase redirect URLs</h4>
+          <p>In Supabase Dashboard → <strong>Authentication → URL Configuration</strong>. Add your Vercel URL to <strong>Site URL</strong> and <strong>Redirect URLs</strong>. This is required for auth redirects to work in production.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>Custom domain (optional)</h4>
+          <p>In Vercel → Project → Settings → Domains. Add your domain (e.g. <code>app.pseudocafe.com</code>). Vercel provides a CNAME record. Add it to your DNS provider. SSL certificate is auto-provisioned. Update <code>NEXT_PUBLIC_SITE_URL</code> and Supabase redirect URLs to the new domain.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:8px; margin-top:6mm;">Production readiness checklist</h3>
+
+    <div class="col2">
+      <div>
+        <ul class="checklist">
+          <li>All 5 environment variables set in Vercel</li>
+          <li>Supabase Site URL updated to production URL</li>
+          <li>Database schema and migrations applied</li>
+          <li>RLS policies enabled on all tables</li>
+          <li>Owner account created (via seed or manually)</li>
+          <li>Resend domain verified (for custom sender)</li>
+          <li>Menu items added with images</li>
+          <li>Tables configured for the outlet</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="checklist">
+          <li>TypeScript build passes with 0 errors (<code>npm run build</code>)</li>
+          <li>Supabase Realtime enabled on project</li>
+          <li>Service role key is server-only (not in <code>NEXT_PUBLIC_</code>)</li>
+          <li><code>.env.local</code> is in <code>.gitignore</code></li>
+          <li>Test full order flow end-to-end in staging</li>
+          <li>Test staff invite email delivery</li>
+          <li>Verify KDS live updates on second device</li>
+          <li>Set Supabase DB password to 20+ chars</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:6mm;">
+      <p><strong>After deployment, the full stack is:</strong> Custom domain (DNS) → Vercel Edge Network (CDN + SSL) → Next.js serverless functions (API routes) → Supabase PostgreSQL (database + auth + realtime) → Resend (email). All connections are encrypted in transit. No infrastructure to manage.</p>
+    </div>
+
+    <div style="margin-top: auto; padding-top:10mm; border-top: 1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <p style="font-size:7.5pt; color:#9ca3af; margin:0;"><strong style="color:#111827;">Pseudo Café</strong> · Restaurant Operations Platform</p>
+        <p style="font-size:7pt; color:#9ca3af; margin:0; margin-top:2px;">Built with Next.js 15 · Supabase · Resend · Vercel</p>
+      </div>
+      <div style="text-align:right;">
+        <p style="font-size:7pt; color:#9ca3af; margin:0;">Version 1.0 · 2025</p>
+        <p style="font-size:7pt; color:#9ca3af; margin:0; margin-top:2px;">8 pages</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* Global background image */
+body {
+  background-image: url('/assets/background/bg1.jpg'); /* put your image in public/assets/background */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
