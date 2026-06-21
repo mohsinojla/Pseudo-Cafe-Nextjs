@@ -95,15 +95,17 @@ export default function Contact() {
                 />
               </div>
               <div>
-                <label className="block mb-1">Your Email</label>
+                <label className="block mb-1">
+                  Your Email
+                  <span className="ml-2 text-xs text-gray-400 font-normal">(cannot be changed)</span>
+                </label>
                 <input
                   type="email"
                   name="email"
                   required
-                  placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-black/10 backdrop-blur-md text-white placeholder-gray-300 shadow-lg focus:outline-none ring-1 ring-yellow-400 focus:ring-2 focus:ring-yellow-400"
+                  readOnly
+                  className="w-full px-4 py-2 rounded-lg bg-white/5 backdrop-blur-md text-gray-400 shadow-lg ring-1 ring-white/10 cursor-not-allowed select-none"
                 />
               </div>
               <div>
