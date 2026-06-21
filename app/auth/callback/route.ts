@@ -46,14 +46,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=auth_callback_error`)
   }
 
+  type StaffProfile = { outlet_id: string | null; onboarding_status: string | null; roles: { name: string } | null }
+
   // Look up their staff profile — first by auth id, then by email (Google may create a new auth id)
-  let profile: { outlet_id: string | null; onboarding_status: string | null; roles: { name: string } | null } | null = null
+  let profile: StaffProfile | null = null
 
   const byId = await supabase
     .from('users')
     .select('outlet_id, onboarding_status, roles(name)')
     .eq('id', user.id)
-    .single() as { data: typeof profile; error: unknown }
+    .single() as { data: StaffProfile | null; error: unknown }
 
   if (byId.data) {
     profile = byId.data
@@ -63,7 +65,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('outlet_id, onboarding_status, roles(name)')
       .eq('email', user.email)
-      .single() as { data: typeof profile; error: unknown }
+      .single() as { data: StaffProfile | null; error: unknown }
     profile = byEmail.data
   }
 
