@@ -58,8 +58,12 @@ export default function LoginPage() {
       .eq('id', data.user.id)
       .single() as { data: { outlet_id: string | null; onboarding_status: string | null; roles: { name: string } | null } | null; error: unknown }
 
+    // Pending users must verify via Google first — block email/password until they do
     if (profile?.onboarding_status === 'pending') {
-      await supabase.from('users').update({ onboarding_status: 'active' } as any).eq('id', data.user.id)
+      await supabase.auth.signOut()
+      setError('Your account is pending verification. Please sign in with Google first to confirm your identity — after that you can use email & password on future logins.')
+      setLoading(false)
+      return
     }
 
     if (profile) {
