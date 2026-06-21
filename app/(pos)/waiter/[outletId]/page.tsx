@@ -302,7 +302,7 @@ export default function WaiterPage({ params }: { params: Promise<{ outletId: str
               </div>
 
               {Object.keys(grouped).length === 0 ? (
-                <p className="text-gray-600 text-sm text-center py-8">No items match "{menuSearch}"</p>
+                <p className="text-gray-600 text-sm text-center py-8">No items match &quot;{menuSearch}&quot;</p>
               ) : (
                 Object.entries(grouped).map(([category, items]) => (
                   <div key={category} className="mb-6">
@@ -346,7 +346,7 @@ export default function WaiterPage({ params }: { params: Promise<{ outletId: str
                             )}
                           </div>
                           {(cart[item.id] ?? 0) > 0 && itemNotes[item.id] && (
-                            <p className="text-yellow-300/70 text-xs mt-1.5 italic truncate">"{itemNotes[item.id]}"</p>
+                            <p className="text-yellow-300/70 text-xs mt-1.5 italic truncate">&quot;{itemNotes[item.id]}&quot;</p>
                           )}
                         </div>
                       ))}
@@ -395,7 +395,7 @@ export default function WaiterPage({ params }: { params: Promise<{ outletId: str
                             <span className="text-yellow-400 ml-2">PKR {((item?.price ?? 0) * qty).toLocaleString()}</span>
                           </div>
                           {itemNotes[id] && (
-                            <p className="text-yellow-300/60 text-xs italic mt-0.5 truncate">"{itemNotes[id]}"</p>
+                            <p className="text-yellow-300/60 text-xs italic mt-0.5 truncate">&quot;{itemNotes[id]}&quot;</p>
                           )}
                         </div>
                       )
