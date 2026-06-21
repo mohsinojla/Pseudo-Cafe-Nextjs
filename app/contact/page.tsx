@@ -1,19 +1,25 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { LogIn } from 'lucide-react'
 
 export default function Contact() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [authChecked, setAuthChecked] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
+        setIsLoggedIn(true)
         setEmail(user.email ?? '')
         setName((user.user_metadata?.full_name as string | undefined) ?? '')
       }
+      setAuthChecked(true)
     })
   }, [])
 
@@ -26,6 +32,7 @@ export default function Contact() {
       </p>
 
       <div className="grid md:grid-cols-2 gap-12">
+        {/* Left: address + map */}
         <div>
           <h2 className="text-3xl font-semibold mb-4">📍 Get in Touch</h2>
           <p className="mb-2">📍 <span className="text-gray-300">The Pseudo Engineers Café by 1972, Lahore, Pakistan</span></p>
@@ -42,50 +49,81 @@ export default function Contact() {
           />
         </div>
 
+        {/* Right: form or login gate */}
         <div>
           <h2 className="text-3xl font-bold mb-4">✉️ Send us a Message</h2>
-          <form action="https://formspree.io/f/mblkelke" method="POST" className="space-y-5">
-            <div>
-              <label className="block mb-1">Your Name</label>
-              <input
-                type="text"
-                name="name"
-                required
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-black/10 backdrop-blur-md text-white placeholder-gray-300 shadow-lg focus:outline-none ring-1 ring-yellow-400 focus:ring-2 focus:ring-yellow-400"
-              />
+
+          {!authChecked ? (
+            /* Loading skeleton */
+            <div className="space-y-4 animate-pulse">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-12 rounded-xl bg-white/5" />
+              ))}
+              <div className="h-10 w-36 rounded-lg bg-white/5" />
             </div>
-            <div>
-              <label className="block mb-1">Your Email</label>
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-black/10 backdrop-blur-md text-white placeholder-gray-300 shadow-lg focus:outline-none ring-1 ring-yellow-400 focus:ring-2 focus:ring-yellow-400"
-              />
+          ) : !isLoggedIn ? (
+            /* Login gate */
+            <div className="flex flex-col items-center justify-center text-center py-12 px-6 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md">
+              <div className="w-14 h-14 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-4">
+                <LogIn size={24} className="text-yellow-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Sign in to send a message</h3>
+              <p className="text-gray-400 text-sm mb-6 max-w-xs">
+                We verify your identity before accepting messages to keep things genuine and spam-free.
+              </p>
+              <Link
+                href="/login"
+                className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-3 rounded-xl transition-all duration-200"
+              >
+                <LogIn size={16} />
+                Sign in
+              </Link>
             </div>
-            <div>
-              <label className="block mb-1">Message</label>
-              <textarea
-                name="message"
-                required
-                placeholder="Write your message..."
-                rows={5}
-                className="w-full px-4 py-2 rounded-lg bg-black/10 backdrop-blur-md text-white placeholder-gray-300 shadow-lg focus:outline-none ring-1 ring-yellow-400 focus:ring-2 focus:ring-yellow-400"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-yellow-400 text-black font-bold px-6 py-2 rounded-lg shadow-lg hover:bg-yellow-300 transition"
-            >
-              Send Message
-            </button>
-          </form>
+          ) : (
+            /* Actual form — only shown when logged in */
+            <form action="https://formspree.io/f/mblkelke" method="POST" className="space-y-5">
+              <div>
+                <label className="block mb-1">Your Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-black/10 backdrop-blur-md text-white placeholder-gray-300 shadow-lg focus:outline-none ring-1 ring-yellow-400 focus:ring-2 focus:ring-yellow-400"
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Your Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-black/10 backdrop-blur-md text-white placeholder-gray-300 shadow-lg focus:outline-none ring-1 ring-yellow-400 focus:ring-2 focus:ring-yellow-400"
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Message</label>
+                <textarea
+                  name="message"
+                  required
+                  placeholder="Write your message..."
+                  rows={5}
+                  className="w-full px-4 py-2 rounded-lg bg-black/10 backdrop-blur-md text-white placeholder-gray-300 shadow-lg focus:outline-none ring-1 ring-yellow-400 focus:ring-2 focus:ring-yellow-400"
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-yellow-400 text-black font-bold px-6 py-2 rounded-lg shadow-lg hover:bg-yellow-300 transition"
+              >
+                Send Message
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </section>
