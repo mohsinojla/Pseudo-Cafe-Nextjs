@@ -2,12 +2,13 @@
 
 import { use, useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { CheckCircle2, ChefHat } from 'lucide-react'
+import { CheckCircle2, ChefHat, Truck, UtensilsCrossed } from 'lucide-react'
 import type { Order, OrderItem } from '@/types/database'
 
 type OrderWithItems = Order & {
   order_items: (OrderItem & { menu_items: { name: string } | null })[]
   tables: { label: string } | null
+  order_type: string | null
 }
 
 const ITEM_STATUS_CYCLE = { queued: 'preparing', preparing: 'ready', ready: 'served' } as const
@@ -142,11 +143,25 @@ export default function KitchenPage({ params }: { params: Promise<{ outletId: st
                   {/* Card Header */}
                   <div className={`px-4 py-3 flex items-center justify-between ${isUrgent ? 'bg-red-500/10' : 'bg-gray-800/50'}`}>
                     <div>
-                      <span className="text-white font-bold text-lg">
-                        {order.tables ? `Table ${order.tables.label}` : 'Takeaway'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-bold text-lg">
+                          {order.tables
+                            ? `Table ${order.tables.label}`
+                            : order.order_type === 'delivery' ? 'Delivery' : 'Online Dine-In'}
+                        </span>
+                        {!order.tables && (
+                          <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                            order.order_type === 'delivery'
+                              ? 'bg-blue-500/15 text-blue-400'
+                              : 'bg-emerald-500/15 text-emerald-400'
+                          }`}>
+                            {order.order_type === 'delivery' ? <Truck size={10} /> : <UtensilsCrossed size={10} />}
+                            Online
+                          </span>
+                        )}
+                      </div>
                       {isUrgent && (
-                        <span className="ml-2 text-xs font-bold text-red-400 bg-red-500/20 px-2 py-0.5 rounded-full">⚠ LATE</span>
+                        <span className="text-xs font-bold text-red-400 bg-red-500/20 px-2 py-0.5 rounded-full">LATE</span>
                       )}
                     </div>
                     <div className={`text-sm font-mono font-bold ${isUrgent ? 'text-red-400' : 'text-gray-400'}`}>

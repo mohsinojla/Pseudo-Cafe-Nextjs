@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     full_name: parsed.data.full_name,
     role_id: parsed.data.role_id,
     is_active: true,
-    onboarding_status: 'pending',
+    onboarding_status: 'active',
   }, { onConflict: 'id' }) as { error: { message: string } | null }
 
   if (profileError) {

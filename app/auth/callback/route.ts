@@ -40,44 +40,34 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=auth_callback_error`)
   }
 
-  // Get the user who just signed in via Google
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     return NextResponse.redirect(`${origin}/login?error=auth_callback_error`)
   }
 
-  type StaffProfile = { outlet_id: string | null; onboarding_status: string | null; roles: { name: string } | null }
+  type StaffProfile = { outlet_id: string | null; roles: { name: string } | null }
 
-  // Look up their staff profile — first by auth id, then by email (Google may create a new auth id)
+  // Check if this user is a staff member (look up by auth id, then email as fallback)
   let profile: StaffProfile | null = null
 
   const byId = await supabase
     .from('users')
-    .select('outlet_id, onboarding_status, roles(name)')
+    .select('outlet_id, roles(name)')
     .eq('id', user.id)
     .single() as { data: StaffProfile | null; error: unknown }
 
   if (byId.data) {
     profile = byId.data
   } else if (user.email) {
-    // Google created a separate auth identity — look up by email
     const byEmail = await supabase
       .from('users')
-      .select('outlet_id, onboarding_status, roles(name)')
+      .select('outlet_id, roles(name)')
       .eq('email', user.email)
       .single() as { data: StaffProfile | null; error: unknown }
     profile = byEmail.data
   }
 
-  // First-time Google login: flip pending → active (this is the identity verification step)
-  if (profile?.onboarding_status === 'pending') {
-    await supabase
-      .from('users')
-      .update({ onboarding_status: 'active' } as Record<string, string>)
-      .eq('email', user.email!)
-  }
-
-  // Route staff to their POS screen, everyone else to home
+  // Staff → route to their POS screen
   if (profile) {
     const roleName = (profile.roles as { name: string } | null)?.name ?? ''
     const base = ROLE_HOME[roleName] ?? '/outlet'
@@ -85,6 +75,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}${dest}`)
   }
 
-  // Regular (non-staff) Google user — go to home
+  // Customer — first-time Google login needs to set a password; returning customers go home
+  const passwordSet = user.user_metadata?.password_set === true
+  if (!passwordSet) {
+    return NextResponse.redirect(`${origin}/setup-account`)
+  }
+
   return NextResponse.redirect(`${origin}/`)
 }

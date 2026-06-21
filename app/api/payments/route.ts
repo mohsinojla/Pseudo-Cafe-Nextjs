@@ -33,8 +33,10 @@ export async function POST(request: Request) {
     .from('orders').select('id, status, outlet_id, table_id').eq('id', parsed.data.order_id).single() as { data: OrderRow | null; error: unknown }
 
   if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-  if (order.status !== 'billed') {
-    return NextResponse.json({ error: 'Order must be in billed state to record payment' }, { status: 422 })
+  // Allow payment for billed table orders, or ready online orders (no table)
+  const isOnlineReady = order.status === 'ready' && !order.table_id
+  if (order.status !== 'billed' && !isOnlineReady) {
+    return NextResponse.json({ error: 'Order must be billed (dine-in) or ready (online) to process payment' }, { status: 422 })
   }
 
   const { data: payment, error: paymentError } = await supabase

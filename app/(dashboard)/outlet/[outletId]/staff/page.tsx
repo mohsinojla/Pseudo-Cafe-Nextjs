@@ -2,10 +2,10 @@
 
 import { use, useEffect, useState, useCallback, type FormEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { UserPlus, Clock, CheckCircle2, XCircle } from 'lucide-react'
+import { UserPlus, CheckCircle2, XCircle } from 'lucide-react'
 import type { User, Role } from '@/types/database'
 
-type StaffMember = User & { roles: Role | null; onboarding_status?: string }
+type StaffMember = User & { roles: Role | null }
 
 export default function StaffPage({ params }: { params: Promise<{ outletId: string }> }) {
   const { outletId } = use(params)
@@ -21,7 +21,7 @@ export default function StaffPage({ params }: { params: Promise<{ outletId: stri
 
   const fetchStaff = useCallback(async () => {
     const [staffRes, rolesRes] = await Promise.all([
-      supabase.from('users').select('*, roles(*), onboarding_status').eq('outlet_id', outletId),
+      supabase.from('users').select('*, roles(*)').eq('outlet_id', outletId),
       supabase.from('roles').select('*').order('name'),
     ])
     if (staffRes.data) setStaff(staffRes.data as StaffMember[])
@@ -72,8 +72,6 @@ export default function StaffPage({ params }: { params: Promise<{ outletId: stri
     return <div className="flex items-center justify-center h-full min-h-screen text-gray-400">Loading…</div>
   }
 
-  const pendingCount = staff.filter((s) => s.onboarding_status === 'pending').length
-
   return (
     <div className="p-6 pt-8">
       <div className="flex items-center justify-between mb-6">
@@ -81,9 +79,6 @@ export default function StaffPage({ params }: { params: Promise<{ outletId: stri
           <h1 className="text-2xl font-bold text-white">Staff</h1>
           <p className="text-gray-400 text-sm mt-1">
             {staff.length} team member{staff.length !== 1 ? 's' : ''}
-            {pendingCount > 0 && (
-              <span className="ml-2 text-amber-400 text-xs">· {pendingCount} pending first login</span>
-            )}
           </p>
         </div>
         <button
@@ -125,9 +120,7 @@ export default function StaffPage({ params }: { params: Promise<{ outletId: stri
                 </td>
               </tr>
             ) : (
-              staff.map((member) => {
-                const isPending = member.onboarding_status === 'pending'
-                return (
+              staff.map((member) => (
                   <tr key={member.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
@@ -147,12 +140,7 @@ export default function StaffPage({ params }: { params: Promise<{ outletId: stri
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
-                        {isPending ? (
-                          <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            <Clock size={11} />
-                            Pending
-                          </span>
-                        ) : member.is_active ? (
+                        {member.is_active ? (
                           <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                             <CheckCircle2 size={11} />
                             Active
@@ -174,8 +162,7 @@ export default function StaffPage({ params }: { params: Promise<{ outletId: stri
                       </button>
                     </td>
                   </tr>
-                )
-              })
+              ))
             )}
           </tbody>
         </table>
@@ -192,10 +179,9 @@ export default function StaffPage({ params }: { params: Promise<{ outletId: stri
               <h2 className="text-white font-bold text-lg">Invite Staff Member</h2>
             </div>
 
-            <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl px-4 py-3 mb-4 flex items-start gap-2">
-              <Clock size={15} className="text-amber-400 mt-0.5 shrink-0" />
-              <p className="text-amber-300 text-xs leading-relaxed">
-                Staff will receive login credentials by email and show as <strong>Pending</strong> until they log in for the first time.
+            <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-xl px-4 py-3 mb-4">
+              <p className="text-yellow-300 text-xs leading-relaxed">
+                Staff will receive their login credentials by email and can sign in immediately with email &amp; password.
               </p>
             </div>
 

@@ -54,17 +54,9 @@ export default function LoginPage() {
 
     const { data: profile } = await supabase
       .from('users')
-      .select('outlet_id, onboarding_status, roles(name)')
+      .select('outlet_id, roles(name)')
       .eq('id', data.user.id)
-      .single() as { data: { outlet_id: string | null; onboarding_status: string | null; roles: { name: string } | null } | null; error: unknown }
-
-    // Pending users must verify via Google first — block email/password until they do
-    if (profile?.onboarding_status === 'pending') {
-      await supabase.auth.signOut()
-      setError('Your account is pending verification. Please sign in with Google first to confirm your identity — after that you can use email & password on future logins.')
-      setLoading(false)
-      return
-    }
+      .single() as { data: { outlet_id: string | null; roles: { name: string } | null } | null; error: unknown }
 
     if (profile) {
       const roleName = profile.roles?.name ?? ''
@@ -72,7 +64,8 @@ export default function LoginPage() {
       const dest = profile.outlet_id ? `${base}/${profile.outlet_id}` : base
       router.push(dest)
     } else {
-      router.push('/outlet')
+      // Regular customer — go to home
+      router.push('/')
     }
 
     router.refresh()
